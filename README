@@ -1,0 +1,35 @@
+Outline:
+
+- Hangman game with 4 max players (for now). All the players are playing against the computer which picks from a small list of words.
+    - Turn based, random number is chosen (0-3) to see which client will start
+    - 6 guesses total - head, body, l arm, r arm, l leg, r leg (order of when they appear)
+    - word to be guessed resides on server the whole time, server will send messages to the clients based on what is going on
+    - user interface is then built on the clients based on these messages
+
+Messages:
+
+-- When there are 4 players connected to the server, the game is started. 
+   
+    -- S5 -> sent from server to all of the clients;
+        \# - number of blanks in word players are guessing
+        B - "begin"
+   
+    -- G -> character sent to the client whose turn it is to guessing
+        - flush stdin to avoid collecting button spam junk for whole game
+        - only takes first character that player types (ignore rest if multiple)
+        - when the G is recieved client should prompt user to enter character
+        - waitg (blocking) for the user to enter a character
+        - FORCE EVERYTHING TO LOWERCASE
+   
+    -- Gα -> client (whose turn it was) response to the server
+        G - represents "guess"
+        α - the guessed character (forced to lowercase by the client)
+
+    -- Cα#{,#} -> servers response based on a CORRECT guess from a client
+        C - represents "correct"
+        α - the guessed letter
+        \#{,#} - the number(s) represent the positions on the blanks where α need to be filled in
+
+    -- Iα -> servers response to an INCORRECT response from the clients
+        I - respresents an "incorrect" guess from client  
+        α - the incorrectly guessed letter to be added to the "guessed" tab
