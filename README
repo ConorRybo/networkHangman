@@ -10,7 +10,7 @@ Messages:
 
 -- When there are 4 players connected to the server, the game is started. 
    
-    -- S5 -> sent from server to all of the clients;
+    -- S# -> sent from server to all of the clients;
         \# - number of blanks in word players are guessing
         B - "begin"
    
