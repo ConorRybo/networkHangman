@@ -26,20 +26,25 @@ int main(int argc, char **argv)
    if(argc == 3) {
       strcpy(serverHostName, argv[1]);
       port = atoi(argv[2]);
-   } else {
+   } 
+   else // demonstrates the usage of the executable 
+   {
       printf("Usage: server <host_name> <port no.>\n");
       exit(0);
    }
 
+   // FD_SETSIZE : /* Maximum number of file descriptors in `fd_set'.  */
    printf("FD_SETSIZE = %d\n",FD_SETSIZE);
-   listenfd = socket(AF_INET, SOCK_STREAM, 0);
+   listenfd = socket(AF_INET, SOCK_STREAM, 0); // opens a socket based on the the provided information 
+   // - AF_INET : IPv4 address family
+   // - SOCK_STREAM : TCP 
 
    /* Need to fill-in the internet info */
    host = gethostbyname(serverHostName);
-   bzero(&serv_addr, sizeof(serv_addr));
-   serv_addr.sin_family = host->h_addrtype;
-   serv_addr.sin_port = htons(port);        /* Arbitrary port number */
-   bcopy(host->h_addr, &serv_addr.sin_addr, host->h_length);
+   bzero(&serv_addr, sizeof(serv_addr)); // erases the bytes in the serv_addr mem space with the size stated
+   serv_addr.sin_family = host->h_addrtype; // gets the type of the ip address
+   serv_addr.sin_port = htons(port);        /* Arbitrary port number htons puts it into network byte order */
+   bcopy(host->h_addr, &serv_addr.sin_addr, host->h_length); // byte order cautious? copy of the host address to the 
 
    /* Advertise listener's name */
    if(bind(listenfd, (SA *)&serv_addr, sizeof(serv_addr))) {
