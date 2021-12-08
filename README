@@ -10,9 +10,9 @@ Messages:
 
 -- When there are 4 players connected to the server, the game is started. 
    
-    -- S# -> sent from server to all of the clients;
+    -- #B -> sent from server to all of the clients;
         \# - number of blanks in word players are guessing
-        B - "begin"
+        B - "blanks" how many blanks are we starting with
    
     -- G -> character sent to the client whose turn it is to guessing
         - flush stdin to avoid collecting button spam junk for whole game
