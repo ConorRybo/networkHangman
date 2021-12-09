@@ -68,7 +68,7 @@ void str_cli(FILE *fp, int sockfd)
                return; // normal termination
             else
             {
-               printf("str_cli: server terminated prematurely\n");
+               printf("str_cli: server terminated prematurely; game might be full or in progress\n");
                exit(1);
             }
          }

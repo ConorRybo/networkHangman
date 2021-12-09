@@ -72,9 +72,8 @@ int main(int argc, char **argv)
    */
    maxfd = listenfd;
    maxi = -1;
-   for (i = 0; i < 4; i++) // goes through and sets all the ids to -1
-      currentGame.players[i].id = -1;
-   // client[i].id = -1;
+   for (i = 0; i < FD_SETSIZE; i++) // goes through and sets all the ids to -1
+      client[i].id = -1;
    FD_ZERO(&allset);
    FD_SET(listenfd, &allset);
 
@@ -96,13 +95,12 @@ int main(int argc, char **argv)
          connfd = accept(listenfd, (SA *)&cli_addr, &cli_len);
 
          i = 0; // find an unused client to store the socket id
-         // while (client[i].id >= 0 && i < FD_SETSIZE)
-         while (currentGame.players[i].id >= 0 && i < FD_SETSIZE)
+         while (client[i].id >= 0 && i < FD_SETSIZE)
             i++;
          if (i < 4) // only allow for up to 4 players in the game
          {
-            // client[i].id = connfd;
-            currentGame.players[i].id = connfd;
+            client[i].id = connfd;
+            currentGame.players[currentGame.nPlayers] = client[i];
             currentGame.nPlayers++;
          }
          else
@@ -111,27 +109,19 @@ int main(int argc, char **argv)
             tmc = true; // drop control flag
          }
 
-         // pipe(client[i].cp);
-         // pipe(client[i].pc);
-         pipe(currentGame.players[i].cp);
-         pipe(currentGame.players[i].pc);
+         pipe(client[i].cp);
+         pipe(client[i].pc);
          if ((childpid = fork()) == 0)
          {
             // child
             if (!tmc) // if there isn't already too many clients
             {
                close(listenfd);
-               close(currentGame.players[i].cp[0]); // close read side of child to parent
-               close(currentGame.players[i].pc[1]); // close write side of parent to chile
-               //          sockfd                           cin                        cout
-               str_cli(currentGame.players[i].id, currentGame.players[i].pc[0], currentGame.players[i].cp[1]);
-               close(currentGame.players[i].cp[1]);
-               close(currentGame.players[i].pc[0]);
-               // close(client[i].cp[0]);
-               // close(client[i].pc[1]);
-               // str_cli(client[i].id, client[i].pc[0], client[i].cp[1]);
-               // close(client[i].cp[1]);
-               // close(client[i].pc[0]);
+               close(client[i].cp[0]);
+               close(client[i].pc[1]);
+               str_cli(client[i].id, client[i].pc[0], client[i].cp[1]);
+               close(client[i].cp[1]);
+               close(client[i].pc[0]);
             }
             // if there too many clients just exit
             printf("exiting child ....\n");
