@@ -17,6 +17,8 @@ int main(int argc, char **argv)
       printf("Usage: a.out <IPaddress> <PortNum> <Username>\n");
       exit(1);
    }
+   char uname[50];
+   strcpy(uname, argv[3]);
 
    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
    { // creating and error checking socket with appropriate variables
@@ -53,58 +55,4 @@ int main(int argc, char **argv)
 
    str_cli(stdin, sockfd); // calling main controlling function
    exit(0);
-}
-
-void procMes(char *message)
-{
-   // main purpose really is to process message
-   // that was passed from the server
-   char bhold[100];            // hold the blanks
-   int size = strlen(message); // get size of message
-   char guess = 'x';           // logic control variable
-   int m = 0;
-   // we know if last is 'B' do specific thing
-   if (size < 1) // need to avoid seg fault
-   {
-      guess = 'x'; // just a dummy loop control variable
-   }
-   else // actually process the last character now
-   {
-      guess = tolower(message[size - 1]);
-   }
-
-   // start conditionals
-   if (guess == 'b') // start the blank logic
-   {
-      for (int x = 0; x < size - 1; x++) // process up to the last spot but stop before
-      {
-         m = (m * 10) + atoi(message[x]);
-      }
-      manBlank(m); // call the blank manager function
-   }
-   else if (guess == 'g')
-   {
-      ourGuess(); // WHAT DO I SEND THIS THING DUDE???
-      // i dont thing anything
-   }
-   else if (isalpha(guess))
-   {
-      if (tolower(message[0]) == 'c')
-      {
-         handleCorrect(bhold);
-      }
-      else if (tolower(message[0]) == 'i')
-      {
-         handleWrong(bhold);
-      }
-      else
-      {
-         printf("Entry not recognized : ignoring...\n");
-      }
-   }
-   else
-   {
-      printf("Entry not recognized : ignoring...\n");
-   }
-   // FLUSH THE INPUT STREAM BEFORE READING FROM CMD LINE
 }
