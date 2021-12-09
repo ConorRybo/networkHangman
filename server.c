@@ -154,8 +154,8 @@ int main(int argc, char **argv)
                continue; // no more readable descriptors
          }
       }
-
-      for (i = 0; i <= maxi; i++)
+      /*
+      for (i = 0; i <= maxi; i++) // for all of the clients
       {
          if ((client[i].id) < 0) // look for a valid client
             continue;
@@ -196,6 +196,7 @@ int main(int argc, char **argv)
                break;
          }
       }
+      */
    }
 
    return 0;
