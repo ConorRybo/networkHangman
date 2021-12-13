@@ -31,17 +31,9 @@ void str_cli(FILE *fp, int sockfd)
    int stdineof;
    int n;
    fd_set rset;
-   struct gametype myGame; // initialize the game struct to hold information
-   myGame.turns = 0;
-   myGame.guess = false;
-   /*
-   Four macros are provided to manipulate the sets. FD_ZERO() clears a set.
-   FD_SET() and FD_CLR() respectively add and remove a given file descriptor from a set.
-   FD_ISSET() tests to see if a file descriptor is part of the set; this is useful after select() returns.
-   */
 
    stdineof = 0;
-   FD_ZERO(&rset); // clears the file descriptor set
+   FD_ZERO(&rset);
    printf("Client ready - sockfd:%d\n", sockfd);
    sendline[0] = '\0';
    for (;;)
@@ -51,12 +43,6 @@ void str_cli(FILE *fp, int sockfd)
       FD_SET(sockfd, &rset);
       maxfdp1 = max(fileno(fp), sockfd) + 1;
 
-      /*
-     select() and pselect() allow a program to monitor multiple file descriptors,
-     waiting until one or more of the file descriptors become "ready" for
-     some class of I/O operation (e.g., input possible). A file descriptor is considered
-     ready if it is possible to perform the corresponding I/O operation (e.g., read(2)) without blocking.
-      */
       select(maxfdp1, &rset, NULL, NULL, NULL);
 
       if (FD_ISSET(sockfd, &rset))
@@ -68,42 +54,35 @@ void str_cli(FILE *fp, int sockfd)
                return; // normal termination
             else
             {
-               printf("str_cli: server terminated prematurely; game might be full or in progress\n");
+               printf("str_cli: server terminated prematurely\n");
                exit(1);
             }
          }
-         // recvline[n] = '\0'; // really don't need this if you use n in
-         // the write function.  If you want to use
-         // strlen, then you need to put put in a
-         // NULL char since the read function does not.
+         recvline[n] = '\0'; // really don't need this if you use n in
+                             // the write function.  If you want to use
+                             // strlen, then you need to put put in a
+                             // NULL char since the read function does not.
          // write(fileno(stdout), recvline, n);
-         // printf("%s\n", recvline);
-         procMes(recvline, &myGame); // process the message sent by the
+         printf("%s\n", recvline);
          if (strcmp(recvline, "exit") == 0)
             return;
       }
-      // if we have a guess then we get to send a message
-      if (myGame.guess)
-      {
-         printf("It is your turn! Please guess a letter: ");
-         if (FD_ISSET(fileno(fp), &rset))
-         {
-            fflush(fp); // flush stdin so we dont get junk
 
-            if ((n = read(fileno(fp), sendline, MAXLINE)) == 0) // reading from stdin
-            {
-               stdineof = 1;
-               shutdown(sockfd, SHUT_WR); // end FIN
-               FD_CLR(fileno(fp), &rset);
-            }
-            else
-            {
-               // sendline[n] = '\0'; // really don't need this if you use n in
-               // the write function.  If you want to use
-               // strlen, then you need to put put in a
-               // NULL char since the read function does not.
-               write(sockfd, sendline, n);
-            }
+      if (FD_ISSET(fileno(fp), &rset))
+      {
+         if ((n = read(fileno(fp), sendline, MAXLINE)) == 0)
+         {
+            stdineof = 1;
+            shutdown(sockfd, SHUT_WR); // end FIN
+            FD_CLR(fileno(fp), &rset);
+         }
+         else
+         {
+            sendline[n] = '\0'; // really don't need this if you use n in
+                                // the write function.  If you want to use
+                                // strlen, then you need to put put in a
+                                // NULL char since the read function does not.
+            write(sockfd, sendline, n);
          }
       }
    }

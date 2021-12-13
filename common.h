@@ -13,7 +13,7 @@
 
 #define MAXLINE 1024
 #define LISTENQ 1024
-#define SERV_PORT 48040
+//#define SERV_PORT 48040
 #define HOSTNAMELEN 100
 
 //#define FD_SETSIZE 10

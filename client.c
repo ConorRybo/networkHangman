@@ -29,7 +29,7 @@ int main(int argc, char **argv)
    bzero(&servaddr, sizeof(servaddr)); // clearing out the memory space of servaddr completely
    servaddr.sin_family = AF_INET;      // IPV4
    // gets the SERV_PORT from the 'common.h' file
-   servaddr.sin_port = htons(SERV_PORT); /*daytime server - normally 13*/ // converts from hostbyte order to network byte order
+   servaddr.sin_port = htons(atoi(argv[2])); /*daytime server - normally 13*/ // converts from hostbyte order to network byte order
    /*
       int inet_pton(int af, const char *restrict src, void *restrict dst);
       DESCRIPTION         top
